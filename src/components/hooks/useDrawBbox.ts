@@ -27,7 +27,7 @@ export default function useDrawBbox(videoRef: RefObject<HTMLVideoElement>) {
             return;
         }
 
-        const nextRect = currentTrack[frame.current + 1];
+        let nextRect = currentTrack[frame.current + 1];
 
         // TODO: think about this
         if (!nextRect) {
@@ -39,8 +39,13 @@ export default function useDrawBbox(videoRef: RefObject<HTMLVideoElement>) {
         const timeDiff = (videoRef.current?.currentTime || 0) * 1000 - 1000;
 
         // TODO make it jump through several frames
-        if (timeDiff >= nextRect.timestamp) {
+        while (nextRect && timeDiff >= nextRect.timestamp) {
             frame.current++;
+            nextRect = currentTrack[frame.current];
+        }
+
+        if (!nextRect) {
+            frame.current--;
         }
 
         ctx.current.clearRect(0, 0, canvasRef.current?.width || 0, canvasRef.current?.height || 0);
