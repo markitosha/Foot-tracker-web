@@ -1,5 +1,6 @@
-import { createContext, useState } from 'react';
+import { createContext, ReactNode, useCallback, useMemo, useState } from 'react';
 import jsonData from '../assets/tracks_and_candidates_v4.json';
+import prepareTrack from '../utils/prepareTrack.ts';
 
 type BBox = {
     timestamp: string;
@@ -9,7 +10,7 @@ type BBox = {
     h: number;
 };
 
-type Track = {
+export type Track = {
     timestamp: number;
     x: number;
     y: number;
@@ -17,37 +18,73 @@ type Track = {
     h: number;
 }
 
-type JsonData = {
+export type JsonData = {
     box_info: BBox[];
     candidates_list: number[];
 }
 
 export const TracksContext = createContext<{
     allTracks: Record<number, JsonData>;
+    mainTrack: Track[];
+    mainTrackId: number;
+    candidateList: number[];
+    candidateId: number;
+    candidateTrack: Track[];
     currentTrack: Track[];
+    color: 'red' | 'yellow';
+    onTrackFinished: () => void;
+    trackList: number[];
+    setMainTrackId: (id: number) => void;
 }>({
     allTracks: {},
-    currentTrack: []
+    mainTrack: [],
+    mainTrackId: 0,
+    candidateList: [],
+    candidateId: 0,
+    candidateTrack: [],
+    currentTrack: [],
+    color: 'red',
+    onTrackFinished: () => {},
+    trackList: [],
+    setMainTrackId: () => {},
 });
 
-const parseTimestamp = (timestamp: string) => {
-    const [hour, minute, second] = timestamp.split(':');
-
-    return ((+hour * 60 * 60) + (+minute * 60) + +second) * 1000;
-}
-
-export default function TracksProvider({ children }: { children: React.ReactNode }) {
+export default function TracksProvider({ children }: { children: ReactNode }) {
     const [allTracks] = useState<Record<number, JsonData>>(jsonData as any);
-    const [currentTrackIndex] = useState<number>(1);
+    const trackList = useMemo(() => Object.keys(allTracks).map(value => +value), [allTracks]);
+    const [mainTrackId, setMainTrackId] = useState<number>(trackList[0] || 1);
+    const [candidateId] = useState<number>(allTracks[mainTrackId]?.candidates_list?.[0]);
 
-    const currentTrack = allTracks[currentTrackIndex]?.box_info.map(item => ({
-        ...item,
-        timestamp: parseTimestamp(item.timestamp)
-    })) || [];
+    const mainTrack = useMemo(
+        () => prepareTrack(allTracks[mainTrackId]),
+        [mainTrackId],
+    );
+    const candidateList = useMemo(
+        () => allTracks[mainTrackId].candidates_list,
+        [mainTrackId],
+    );
+    const candidateTrack = useMemo(
+        () => prepareTrack(allTracks[candidateId]),
+        [candidateId],
+    );
+    const [currentTrack, setCurrentTrack] = useState<Track[]>(mainTrack);
+
+    const onTrackFinished = useCallback(() => {
+        setCurrentTrack(candidateTrack);
+    }, [candidateTrack]);
 
     return <TracksContext.Provider value={{
         allTracks,
-        currentTrack
+        mainTrack,
+        mainTrackId,
+        setMainTrackId,
+        candidateList,
+        candidateId,
+        candidateTrack,
+        currentTrack,
+        onTrackFinished,
+        trackList,
+        color: currentTrack === mainTrack ? 'red' : 'yellow',
     }}>
         {children}
     </TracksContext.Provider>
