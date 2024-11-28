@@ -1,11 +1,13 @@
-import ActiveTrack from './components/ActiveTrack.tsx';
+import CandidateTrack from './components/CandidateTrack.tsx';
 import Canvas from './components/Canvas.tsx';
+import MainTrack from './components/MainTrack.tsx';
 import TracksProvider from './context/TracksContext.tsx';
 
 function App() {
     return (
         <TracksProvider>
-            <ActiveTrack />
+            <MainTrack />
+            <CandidateTrack />
             <Canvas />
         </TracksProvider>
     )

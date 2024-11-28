@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useCallback, useMemo, useState } from 'react';
+import { createContext, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import jsonData from '../assets/tracks_and_candidates_v4.json';
 import prepareTrack from '../utils/prepareTrack.ts';
 
@@ -35,6 +35,7 @@ export const TracksContext = createContext<{
     onTrackFinished: () => void;
     trackList: number[];
     setMainTrackId: (id: number) => void;
+    setCandidateId: (id: number) => void;
 }>({
     allTracks: {},
     mainTrack: [],
@@ -47,13 +48,14 @@ export const TracksContext = createContext<{
     onTrackFinished: () => {},
     trackList: [],
     setMainTrackId: () => {},
+    setCandidateId: () => {},
 });
 
 export default function TracksProvider({ children }: { children: ReactNode }) {
     const [allTracks] = useState<Record<number, JsonData>>(jsonData as any);
     const trackList = useMemo(() => Object.keys(allTracks).map(value => +value), [allTracks]);
     const [mainTrackId, setMainTrackId] = useState<number>(trackList[0] || 1);
-    const [candidateId] = useState<number>(allTracks[mainTrackId]?.candidates_list?.[0]);
+    const [candidateId, setCandidateId] = useState<number>(allTracks[mainTrackId]?.candidates_list?.[0]);
 
     const mainTrack = useMemo(
         () => prepareTrack(allTracks[mainTrackId]),
@@ -73,6 +75,10 @@ export default function TracksProvider({ children }: { children: ReactNode }) {
         setCurrentTrack(candidateTrack);
     }, [candidateTrack]);
 
+    useEffect(() => {
+        setCandidateId(candidateList[0]);
+    }, [candidateList]);
+
     return <TracksContext.Provider value={{
         allTracks,
         mainTrack,
@@ -80,6 +86,7 @@ export default function TracksProvider({ children }: { children: ReactNode }) {
         setMainTrackId,
         candidateList,
         candidateId,
+        setCandidateId,
         candidateTrack,
         currentTrack,
         onTrackFinished,
