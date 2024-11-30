@@ -1,6 +1,6 @@
 import { MutableRefObject, useContext, useEffect, useRef } from 'react';
-import { Track, TracksContext } from '../../context/TracksContext.tsx';
-import { VideoContext } from '../../context/VideoContext.tsx';
+import { Track, TracksContext } from '../../contexts/TracksContext.tsx';
+import { VideoContext } from '../../contexts/VideoContext.tsx';
 
 const TIME_SHIFT = 1000;
 

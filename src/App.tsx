@@ -1,8 +1,8 @@
 import CandidateTrack from './components/CandidateTrack.tsx';
 import Canvas from './components/Canvas.tsx';
 import MainTrack from './components/MainTrack.tsx';
-import TracksProvider from './context/TracksContext.tsx';
-import VideoProvider from './context/VideoContext.tsx';
+import TracksProvider from './contexts/TracksContext.tsx';
+import VideoProvider from './contexts/VideoContext.tsx';
 
 function App() {
     return (

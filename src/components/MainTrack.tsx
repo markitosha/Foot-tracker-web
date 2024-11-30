@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { TracksContext } from '../context/TracksContext.tsx';
+import { TracksContext } from '../contexts/TracksContext.tsx';
 import ActiveTrack from './ActiveTrack.tsx';
 
 export default function MainTrack() {

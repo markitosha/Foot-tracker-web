@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { VideoContext } from '../../context/VideoContext.tsx';
+import { VideoContext } from '../../contexts/VideoContext.tsx';
 
 export default function useCanvasSizes() {
     const { videoRef } = useContext(VideoContext);
