@@ -10,6 +10,14 @@ export type Track = {
     h: number;
 }
 
+export type TrackStatusType = ''
+    | 'Пауза внутри трека'
+    | 'Трек закончился'
+    | 'Трек еще не начался'
+    | 'Трек активен'
+    | 'Последний фрейм'
+    | 'Пустой фрейм';
+
 export const TracksContext = createContext<{
     mainTrack: Track[];
     mainTrackId: number;
@@ -22,6 +30,10 @@ export const TracksContext = createContext<{
     pickNextCandidate: () => void;
     removeCandidate: () => void;
     joinTracks: () => void;
+    setCandidateTrackStatus: (s: TrackStatusType) => void;
+    setMainTrackStatus: (s: TrackStatusType) => void;
+    mainTrackStatus: TrackStatusType;
+    candidateTrackStatus: TrackStatusType;
 }>({
     mainTrack: [],
     mainTrackId: 0,
@@ -33,7 +45,11 @@ export const TracksContext = createContext<{
     setCandidateId: () => {},
     pickNextCandidate: () => {},
     removeCandidate: () => {},
-    joinTracks: () => {}
+    joinTracks: () => {},
+    setCandidateTrackStatus: () => {},
+    setMainTrackStatus: () => {},
+    mainTrackStatus: '',
+    candidateTrackStatus: '',
 });
 
 export default function TracksProvider({ children }: { children: ReactNode }) {
@@ -45,6 +61,9 @@ export default function TracksProvider({ children }: { children: ReactNode }) {
     const [mainTrackId, setMainTrackId] = useState<number>(trackList[0] || 1);
     // candidate id, picked for rendering
     const [candidateId, setCandidateId] = useState<number>(allTracks[mainTrackId]?.candidates_list?.[0]);
+
+    const [mainTrackStatus, setMainTrackStatus] = useState<TrackStatusType>('');
+    const [candidateTrackStatus, setCandidateTrackStatus] = useState<TrackStatusType>('');
 
     // track for the main bbox
     const mainTrack = useMemo(
@@ -107,7 +126,11 @@ export default function TracksProvider({ children }: { children: ReactNode }) {
         trackList,
         pickNextCandidate,
         removeCandidate,
-        joinTracks
+        joinTracks,
+        setMainTrackStatus,
+        setCandidateTrackStatus,
+        mainTrackStatus,
+        candidateTrackStatus
     }}>
         {children}
     </TracksContext.Provider>

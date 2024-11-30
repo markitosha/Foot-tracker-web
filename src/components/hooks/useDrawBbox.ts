@@ -1,5 +1,5 @@
 import { MutableRefObject, useContext, useEffect, useRef } from 'react';
-import { Track, TracksContext } from '../../contexts/TracksContext.tsx';
+import { Track, TracksContext, TrackStatusType } from '../../contexts/TracksContext.tsx';
 import { VideoContext } from '../../contexts/VideoContext.tsx';
 
 const TIME_SHIFT = 1000;
@@ -15,7 +15,7 @@ export default function useDrawBbox() {
     const frameCandidate = useRef(0);
     const lastCurrentTime = useRef(0);
 
-    const { mainTrack, candidateTrack } = useContext(TracksContext);
+    const { mainTrack, candidateTrack, setCandidateTrackStatus, setMainTrackStatus } = useContext(TracksContext);
 
     useEffect(() => {
         ctx.current = canvasRef.current?.getContext('2d');
@@ -45,7 +45,12 @@ export default function useDrawBbox() {
         }
     }, [mainTrack, candidateTrack, videoRef.current]);
 
-    const drawBbox = (track: Track[], color: string, frame: MutableRefObject<number>) => {
+    const drawBbox = (
+        track: Track[],
+        color: string,
+        frame: MutableRefObject<number>,
+        setStatus: (status: TrackStatusType) => void
+    ) => {
         if (!ctx.current) {
             return;
         }
@@ -55,6 +60,7 @@ export default function useDrawBbox() {
         let nextRect = track[frame.current];
 
         if (!nextRect) {
+            setStatus('Пустой фрейм');
             return;
         }
 
@@ -69,14 +75,30 @@ export default function useDrawBbox() {
         if (!nextRect) {
             frame.current--;
             nextRect = track[frame.current];
+
+            setStatus('Последний фрейм');
         }
 
         // Draw rectangle only if it's not too far from current time
-        if (Math.abs((nextRect.timestamp - timeDiff)) < (500 + TIME_SHIFT)) {
+        if (Math.abs((nextRect.timestamp - timeDiff)) < 100) {
             ctx.current.strokeStyle = color;
             ctx.current.lineWidth = 5;
 
             ctx.current.strokeRect(nextRect.x, nextRect.y, nextRect.w, nextRect.h);
+
+            setStatus('Трек активен');
+        } else {
+            if (frame.current === 0) {
+                setStatus('Трек еще не начался');
+                return;
+            }
+
+            if (frame.current >= track.length - 1) {
+                setStatus('Трек закончился');
+                return;
+            }
+
+            setStatus('Пауза внутри трека');
         }
     }
 
@@ -87,8 +109,8 @@ export default function useDrawBbox() {
 
         ctx.current.clearRect(0, 0, canvasRef.current?.width || 0, canvasRef.current?.height || 0);
 
-        drawBbox(mainTrack, 'red', frameMain);
-        drawBbox(candidateTrack, 'yellow', frameCandidate);
+        drawBbox(mainTrack, 'red', frameMain, setMainTrackStatus);
+        drawBbox(candidateTrack, 'yellow', frameCandidate, setCandidateTrackStatus);
 
         if (!videoRef.current?.paused) {
             frameTimerRef.current = requestAnimationFrame(draw);
