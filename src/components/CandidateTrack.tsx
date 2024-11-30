@@ -10,7 +10,7 @@ export default function CandidateTrack() {
             trackList={candidateList}
             trackId={candidateId}
             setMainTrackId={setCandidateId}
-            label={'Кандидат'}
+            label={`Кандидат (${candidateList.length})`}
             color={'secondary'}
         />
     )

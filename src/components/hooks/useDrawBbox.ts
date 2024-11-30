@@ -1,85 +1,97 @@
-import { RefObject, useContext, useEffect, useRef } from 'react';
-import { TracksContext } from '../../context/TracksContext.tsx';
+import { MutableRefObject, RefObject, useContext, useEffect, useRef } from 'react';
+import { Track, TracksContext } from '../../context/TracksContext.tsx';
+
+const TIME_SHIFT = 1000;
 
 export default function useDrawBbox(
     videoRef: RefObject<HTMLVideoElement>,
 ) {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const ctx = useRef<CanvasRenderingContext2D | null | undefined>(null);
-    const frameRef = useRef<number | null>(null);
-    const frame = useRef(0);
+    const frameTimerRef = useRef<number | null>(null);
 
-    const { currentTrack, color, onTrackFinished } = useContext(TracksContext);
+    const frameMain = useRef(0);
+    const frameCandidate = useRef(0);
 
-    console.log('currentTrack', currentTrack.length);
+    const { mainTrack, candidateTrack } = useContext(TracksContext);
 
     useEffect(() => {
         ctx.current = canvasRef.current?.getContext('2d');
     }, []);
 
     useEffect(() => {
-        console.log('change of track');
-        // TODO change to some kind of "reload" method
         stop();
         start();
-    }, [currentTrack]);
+    }, [mainTrack, candidateTrack, videoRef.current]);
+
+    useEffect(() => {
+        videoRef.current?.addEventListener('pause', stop);
+        videoRef.current?.addEventListener('play', start);
+
+        return () => {
+            videoRef.current?.removeEventListener('pause', stop);
+            videoRef.current?.removeEventListener('play', start);
+        }
+    }, [videoRef.current])
+
+    const drawBbox = (track: Track[], color: string, frame: MutableRefObject<number>) => {
+        if (!ctx.current) {
+            return;
+        }
+
+        // In this track for some reason time difference is a second (explanation for "- 1000")
+        const timeDiff = (videoRef.current?.currentTime || 0) * 1000 - TIME_SHIFT;
+        let nextRect = track[frame.current];
+
+        if (!nextRect) {
+            return;
+        }
+
+        // Find next coordinates to draw
+        // Sometimes we need to skip some frames because of high speed
+        while (nextRect && timeDiff >= nextRect.timestamp) {
+            frame.current++;
+            nextRect = track[frame.current];
+        }
+
+        // Draw last frame if we don't have next
+        if (!nextRect) {
+            frame.current--;
+            nextRect = track[frame.current];
+        }
+
+        // Draw rectangle only if it's not too far from current time
+        if (Math.abs((nextRect.timestamp - timeDiff)) < (500 + TIME_SHIFT)) {
+            ctx.current.strokeStyle = color;
+            ctx.current.lineWidth = 5;
+
+            ctx.current.strokeRect(nextRect.x, nextRect.y, nextRect.w, nextRect.h);
+        }
+    }
 
     const draw = () => {
         if (!ctx.current) {
             return;
         }
 
-        const rect = currentTrack[frame.current];
-
-        if (!rect) {
-            stop();
-            return;
-        }
-
-        // In this track for some reason time difference is a second
-        const timeDiff = (videoRef.current?.currentTime || 0) * 1000 - 1000;
-        let nextRect = rect;
-
-        // Find next coordinates to draw
-        // Sometimes we need to skip some frames because of high speed
-        while (nextRect && timeDiff >= nextRect.timestamp) {
-            frame.current++;
-            nextRect = currentTrack[frame.current];
-        }
-
-        // Draw last frame if we don't have next
-        if (!nextRect) {
-            frame.current--;
-            nextRect = currentTrack[frame.current];
-        }
-
         ctx.current.clearRect(0, 0, canvasRef.current?.width || 0, canvasRef.current?.height || 0);
-        ctx.current.strokeStyle = color;
-        ctx.current.lineWidth = 5;
 
-        ctx.current.strokeRect(nextRect.x, nextRect.y, nextRect.w, nextRect.h);
+        drawBbox(mainTrack, 'red', frameMain);
+        drawBbox(candidateTrack, 'yellow', frameCandidate);
 
-        frameRef.current = requestAnimationFrame(draw);
-
-        // check the end of the track
-        if (currentTrack[frame.current + 1]) {
-        //     frameRef.current = requestAnimationFrame(draw);
-        } else {
-            onTrackFinished();
+        if (!videoRef.current?.paused) {
+            frameTimerRef.current = requestAnimationFrame(draw);
         }
     };
 
     const start = async () => {
-        // TODO сбрасывать не до 0, а до текущего фрейма видео
-        frame.current = 0;
         draw();
     };
 
     const stop = () => {
-        console.log('stop');
-        cancelAnimationFrame(frameRef.current || 0);
-        // videoRef.current?.pause();
-        // onTrackFinished();
+        cancelAnimationFrame(frameTimerRef.current || 0);
+        frameMain.current = 0;
+        frameCandidate.current = 0;
     };
 
     return {

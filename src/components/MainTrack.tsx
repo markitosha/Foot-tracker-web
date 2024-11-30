@@ -10,7 +10,7 @@ export default function MainTrack() {
             trackList={trackList}
             trackId={mainTrackId}
             setMainTrackId={setMainTrackId}
-            label={'Трек'}
+            label={`Трек (${trackList.length})`}
             color={'primary'}
         />
     )
