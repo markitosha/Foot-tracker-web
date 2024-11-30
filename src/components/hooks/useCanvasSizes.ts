@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { VideoContext } from '../../context/VideoContext.tsx';
 
 export default function useCanvasSizes() {
-    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const { videoRef } = useContext(VideoContext);
     const [sizes, setSizes] = useState({ width: 0, height: 0, videoWidth: 0, videoHeight: 0 });
 
     useEffect(() => {
@@ -17,9 +18,11 @@ export default function useCanvasSizes() {
         };
 
         videoRef.current?.addEventListener('loadedmetadata', handler);
+        window.addEventListener('resize', handler);
 
         return () => {
             videoRef.current?.removeEventListener('loadedmetadata', handler);
+            window.removeEventListener('resize', handler);
         }
     }, []);
 

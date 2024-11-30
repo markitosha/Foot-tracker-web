@@ -3,7 +3,7 @@ import useDrawBbox from './hooks/useDrawBbox.ts';
 
 export default function Canvas() {
     const { sizes, videoRef } = useCanvasSizes();
-    const { canvasRef } = useDrawBbox(videoRef);
+    const { canvasRef } = useDrawBbox();
 
     return <div className={'flex items-center'}>
         <div className={'relative'}>

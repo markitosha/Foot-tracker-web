@@ -1,11 +1,12 @@
-import { MutableRefObject, RefObject, useContext, useEffect, useRef } from 'react';
+import { MutableRefObject, useContext, useEffect, useRef } from 'react';
 import { Track, TracksContext } from '../../context/TracksContext.tsx';
+import { VideoContext } from '../../context/VideoContext.tsx';
 
 const TIME_SHIFT = 1000;
 
-export default function useDrawBbox(
-    videoRef: RefObject<HTMLVideoElement>,
-) {
+export default function useDrawBbox() {
+    const { videoRef } = useContext(VideoContext);
+
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const ctx = useRef<CanvasRenderingContext2D | null | undefined>(null);
     const frameTimerRef = useRef<number | null>(null);
