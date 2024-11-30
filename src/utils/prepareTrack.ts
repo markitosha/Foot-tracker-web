@@ -1,4 +1,5 @@
-import { JsonData, Track } from '../contexts/TracksContext.tsx';
+import { JsonData } from '../contexts/JsonContext.tsx';
+import { Track } from '../contexts/TracksContext.tsx';
 
 const parseTimestamp = (timestamp: string) => {
     const [hour, minute, second] = timestamp.split(':');

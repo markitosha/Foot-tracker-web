@@ -34,6 +34,7 @@ export const TracksContext = createContext<{
     setMainTrackStatus: (s: TrackStatusType) => void;
     mainTrackStatus: TrackStatusType;
     candidateTrackStatus: TrackStatusType;
+    removeTrackById: (id: number) => void;
 }>({
     mainTrack: [],
     mainTrackId: 0,
@@ -50,6 +51,7 @@ export const TracksContext = createContext<{
     setMainTrackStatus: () => {},
     mainTrackStatus: '',
     candidateTrackStatus: '',
+    removeTrackById: () => {}
 });
 
 export default function TracksProvider({ children }: { children: ReactNode }) {
@@ -72,7 +74,7 @@ export default function TracksProvider({ children }: { children: ReactNode }) {
     );
     // list of candidates for picked main track
     const candidateList = useMemo(
-        () => allTracks[mainTrackId].candidates_list,
+        () => allTracks[mainTrackId]?.candidates_list || [],
         [mainTrackId, allTracks],
     );
     // track for the candidate bbox
@@ -101,6 +103,14 @@ export default function TracksProvider({ children }: { children: ReactNode }) {
         }
     }, [candidateList, candidateId]);
 
+    useEffect(() => {
+        const index = trackList.findIndex(value => value === mainTrackId);
+
+        if (index === -1) {
+            setMainTrackId(trackList[0]);
+        }
+    }, [trackList, mainTrackId]);
+
     /**
      * Actions for JSON Context
      */
@@ -113,7 +123,11 @@ export default function TracksProvider({ children }: { children: ReactNode }) {
         type: 'joinTracks',
         candidateId: candidateId,
         mainId: mainTrackId
-    })
+    });
+    const removeTrackById = (id: number) => dispatch({
+        type: 'removeId',
+        id
+    });
 
     return <TracksContext.Provider value={{
         mainTrack,
@@ -130,7 +144,8 @@ export default function TracksProvider({ children }: { children: ReactNode }) {
         setMainTrackStatus,
         setCandidateTrackStatus,
         mainTrackStatus,
-        candidateTrackStatus
+        candidateTrackStatus,
+        removeTrackById
     }}>
         {children}
     </TracksContext.Provider>

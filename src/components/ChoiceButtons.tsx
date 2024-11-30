@@ -5,7 +5,14 @@ import { VideoContext } from '../contexts/VideoContext.tsx';
 
 export default function ChoiceButtons() {
     const { rewindToEnd } = useContext(VideoContext);
-    const { removeCandidate, pickNextCandidate, joinTracks } = useContext(TracksContext);
+    const {
+        removeCandidate,
+        pickNextCandidate,
+        joinTracks,
+        candidateId,
+        mainTrackId,
+        removeTrackById
+    } = useContext(TracksContext);
 
     const handleYes = () => {
         joinTracks();
@@ -23,6 +30,12 @@ export default function ChoiceButtons() {
         rewindToEnd();
     };
 
+    const handleRemoveCandidate = () => {
+        removeTrackById(candidateId);
+        pickNextCandidate();
+        rewindToEnd();
+    }
+
     return (
         <div className={'flex flex-col justify-center items-center my-4 gap-1'}>
             <ButtonGroup>
@@ -34,6 +47,14 @@ export default function ChoiceButtons() {
                 </Button>
                 <Button color={'warning'} onClick={handleIdk}>
                     Не знаю
+                </Button>
+            </ButtonGroup>
+            <ButtonGroup>
+                <Button color={'error'} onClick={handleRemoveCandidate}>
+                    Удалить [{candidateId}] везде
+                </Button>
+                <Button color={'error'} onClick={() => removeTrackById(mainTrackId)}>
+                    Удалить [{mainTrackId}] везде
                 </Button>
             </ButtonGroup>
         </div>

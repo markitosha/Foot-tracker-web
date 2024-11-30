@@ -25,7 +25,10 @@ export default function ActiveTrack({ trackList = [], trackId, setMainTrackId, l
     return (
         <ThemeProvider theme={theme}>
             <div className={'flex flex-col justify-center items-center my-4 gap-1'}>
-                <span className={'text-m font-semibold'}>{label}</span>
+                <div className={'flex gap-2'}>
+                    <span className={'text-m font-semibold'}>{label}</span>
+                    <TrackStatus trackStatus={trackStatus}/>
+                </div>
                 <div className={'flex gap-2 justify-center items-center'}>
                     <Pagination
                         count={trackList.length}
@@ -44,7 +47,6 @@ export default function ActiveTrack({ trackList = [], trackId, setMainTrackId, l
                             />
                         )}
                     />
-                    <TrackStatus trackStatus={trackStatus} />
                 </div>
             </div>
         </ThemeProvider>

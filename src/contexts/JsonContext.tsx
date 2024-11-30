@@ -29,10 +29,25 @@ type Action = {
     type: 'removeCandidate' | 'joinTracks',
     mainId: number,
     candidateId: number,
+} | {
+    type: 'removeId',
+    id: number,
 };
 
 const reducer = (prevState: FileData, action: Action) => {
     switch (action.type) {
+        case 'removeId': {
+            const newState = structuredClone(prevState);
+            delete newState[action.id];
+
+            for (const key in newState) {
+                newState[key].candidates_list = newState[key]
+                    .candidates_list
+                    .filter(value => value !== action.id);
+            }
+
+            return newState;
+        }
         case 'removeCandidate': {
             return {
                 ...prevState,
