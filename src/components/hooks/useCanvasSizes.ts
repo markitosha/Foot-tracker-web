@@ -4,6 +4,7 @@ import { VideoContext } from '../../contexts/VideoContext.tsx';
 export default function useCanvasSizes() {
     const { videoRef } = useContext(VideoContext);
     const [sizes, setSizes] = useState({ width: 0, height: 0, videoWidth: 0, videoHeight: 0 });
+    const [state, updateCanvas] = useState(null);
 
     useEffect(() => {
         const handler = () => {
@@ -24,10 +25,11 @@ export default function useCanvasSizes() {
             videoRef.current?.removeEventListener('loadedmetadata', handler);
             window.removeEventListener('resize', handler);
         }
-    }, []);
+    }, [videoRef.current, state]);
 
     return {
         sizes,
-        videoRef
+        videoRef,
+        updateCanvas
     }
 }
