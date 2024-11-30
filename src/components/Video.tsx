@@ -30,7 +30,7 @@ export const VideoJS = ({ options, canvasRef, updateCanvas }: {
                 }
             });
         } else {
-            playerRef.current.width(window.innerWidth);
+            playerRef.current.width(window.innerWidth / 2);
         }
     }, [options, containerRef]);
 

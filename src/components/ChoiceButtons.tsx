@@ -37,7 +37,7 @@ export default function ChoiceButtons() {
     }
 
     return (
-        <div className={'flex flex-col justify-center items-center my-4 gap-1'}>
+        <div className={'flex flex-col justify-center items-center my-4 gap-4'}>
             <ButtonGroup>
                 <Button color={'success'} onClick={handleYes}>
                     Да

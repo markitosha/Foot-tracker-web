@@ -14,7 +14,7 @@ export default function Player() {
                 options={{
                     sources: 'https://firebasestorage.googleapis.com/v0/b/pleaz-player-staging.appspot.com/o/282406_half_2_10min.mp4?alt=media&token=a47d6f04-cbaf-4521-a623-9724f5f45738',
                     controls: true,
-                    width: window.innerWidth,
+                    width: window.innerWidth / 2,
                     playbackRates: [0.5, 1, 1.5, 2, 2.5, 3, 10]
                 }}
                 canvasRef={canvasRef}
