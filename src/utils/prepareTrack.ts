@@ -8,8 +8,12 @@ const parseTimestamp = (timestamp: string) => {
 }
 
 export default function prepareTrack(track?: JsonData): Track[] {
-    return track?.box_info.map(item => ({
+    const mapped =  track?.box_info.map(item => ({
         ...item,
         timestamp: parseTimestamp(item.timestamp),
     })) || []
+
+    mapped.sort((a, b) => a.timestamp - b.timestamp);
+
+    return mapped;
 }
