@@ -12,6 +12,7 @@ export default function useDrawBbox(
 
     const frameMain = useRef(0);
     const frameCandidate = useRef(0);
+    const lastCurrentTime = useRef(0);
 
     const { mainTrack, candidateTrack } = useContext(TracksContext);
 
@@ -20,19 +21,28 @@ export default function useDrawBbox(
     }, []);
 
     useEffect(() => {
-        stop();
-        start();
-    }, [mainTrack, candidateTrack, videoRef.current]);
+        restart();
 
-    useEffect(() => {
+        const timeUpdate = (e: any) => {
+            const currentTime = e.target.currentTime;
+
+            if (videoRef.current?.paused || currentTime < lastCurrentTime.current) {
+                restart();
+            }
+
+            lastCurrentTime.current = currentTime;
+        }
+
         videoRef.current?.addEventListener('pause', stop);
         videoRef.current?.addEventListener('play', start);
+        videoRef.current?.addEventListener('timeupdate', timeUpdate);
 
         return () => {
             videoRef.current?.removeEventListener('pause', stop);
             videoRef.current?.removeEventListener('play', start);
+            videoRef.current?.removeEventListener('timeupdate', timeUpdate);
         }
-    }, [videoRef.current])
+    }, [mainTrack, candidateTrack, videoRef.current]);
 
     const drawBbox = (track: Track[], color: string, frame: MutableRefObject<number>) => {
         if (!ctx.current) {
@@ -93,6 +103,11 @@ export default function useDrawBbox(
         frameMain.current = 0;
         frameCandidate.current = 0;
     };
+
+    const restart = () => {
+        stop();
+        start();
+    }
 
     return {
         start,
