@@ -1,5 +1,6 @@
 import CandidateTrack from './components/CandidateTrack.tsx';
 import ChoiceButtons from './components/ChoiceButtons.tsx';
+import DownloadJson from './components/DownloadJsonButton.tsx';
 import MainTrack from './components/MainTrack.tsx';
 import Player from './components/Player.tsx';
 import ReferenceButtons from './components/ReferenceButtons.tsx';
@@ -19,6 +20,7 @@ function App() {
                             <CandidateTrack/>
                             <ReferenceButtons/>
                             <ChoiceButtons/>
+                            <DownloadJson />
                         </div>
                     </div>
                 </VideoProvider>
