@@ -6,7 +6,7 @@ export default function ReferenceButtons() {
     const { rewindToEnd, rewindToStart } = useContext(VideoContext);
 
     return (
-        <div className={'flex flex-col justify-center items-center my-4 gap-1'}>
+        <div className={'flex flex-col justify-center items-center gap-2'}>
             <ButtonGroup size={'small'}>
                 <Button onClick={rewindToStart}>⬅️&nbsp;Начало трека</Button>
                 <Button onClick={rewindToEnd}>Конец трека&nbsp;➡️</Button>

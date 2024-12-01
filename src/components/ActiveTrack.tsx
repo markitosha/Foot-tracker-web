@@ -24,7 +24,7 @@ export default function ActiveTrack({ trackList = [], trackId, setMainTrackId, l
 
     return (
         <ThemeProvider theme={theme}>
-            <div className={'flex flex-col justify-center items-center my-4 gap-1'}>
+            <div className={'flex flex-col justify-center items-center gap-2'}>
                 <div className={'flex gap-2'}>
                     <span className={'text-m font-semibold'}>{label}</span>
                     <TrackStatus trackStatus={trackStatus}/>
@@ -33,8 +33,6 @@ export default function ActiveTrack({ trackList = [], trackId, setMainTrackId, l
                     <Pagination
                         count={trackList.length}
                         page={page + 1}
-                        showFirstButton
-                        showLastButton
                         color={color}
                         variant={'text'}
                         onChange={(_, page) => {

@@ -6,7 +6,7 @@ export default function TrackShiftSlider() {
     const { trackTimeShift, setTrackTimeShift } = useContext(TracksContext);
 
     return (
-        <div className={'mt-10 flex flex-col justify-center items-center'}>
+        <div className={'flex flex-col justify-center items-center'}>
             <span className={'text-center text-gray-600 text-xs'}>
                 Иногда треки не совпадают со значениями currentTime плеера, что вызывает "сдвиг" в отображении трека.
                 Этот слайдер позволяет вручную корректировать сдвиг.

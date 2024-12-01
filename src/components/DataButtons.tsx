@@ -66,7 +66,7 @@ export default function DataButtons() {
     };
 
     return (
-        <ButtonGroup>
+        <ButtonGroup className={'text-center mt-4'} size={'small'}>
             <Button variant={'outlined'} ref={linkRef} component="label">
                 Загрузить видео ⬆︎
                 <VisuallyHiddenInput

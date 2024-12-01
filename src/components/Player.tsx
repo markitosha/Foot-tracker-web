@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { VideoContext } from '../contexts/VideoContext.tsx';
+import getPlayerWidth from '../utils/getPlayerWidth.ts';
 import useCanvasSizes from './hooks/useCanvasSizes.ts';
 import useDrawBbox from './hooks/useDrawBbox.ts';
 
@@ -17,7 +18,7 @@ export default function Player() {
                 options={{
                     sources: videoSrc,
                     controls: true,
-                    width: window.innerWidth / 2,
+                    width: getPlayerWidth(),
                     playbackRates: [0.5, 1, 1.5, 2, 2.5, 3, 10]
                 }}
                 canvasRef={canvasRef}

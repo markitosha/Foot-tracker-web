@@ -3,6 +3,7 @@ import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import Player from 'video.js/dist/types/player';
 import { VideoContext } from '../contexts/VideoContext.tsx';
+import getPlayerWidth from '../utils/getPlayerWidth.ts';
 
 export const VideoJS = ({ options, canvasRef, updateCanvas }: {
     options: any;
@@ -30,7 +31,7 @@ export const VideoJS = ({ options, canvasRef, updateCanvas }: {
                 }
             });
         } else {
-            playerRef.current.width(window.innerWidth / 2);
+            playerRef.current.width(getPlayerWidth());
 
             // set video directly to video component, because video.js throws error
             // also HACK
