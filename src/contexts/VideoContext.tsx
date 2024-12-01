@@ -1,4 +1,4 @@
-import { createContext, MutableRefObject, ReactNode, useCallback, useContext, useRef } from 'react';
+import { createContext, MutableRefObject, ReactNode, useCallback, useContext, useRef, useState } from 'react';
 import { TIME_BEFORE_END } from '../constants.ts';
 import { TracksContext } from './TracksContext.tsx';
 
@@ -6,14 +6,19 @@ export const VideoContext = createContext<{
     videoRef: MutableRefObject<HTMLVideoElement | null>;
     rewindToEnd: () => void;
     rewindToStart: () => void;
+    setVideoSrc: (data: string) => void;
+    videoSrc: string | null;
 }>({
     videoRef: { current: null },
     rewindToEnd: () => {},
     rewindToStart: () => {},
+    setVideoSrc: () => {},
+    videoSrc: null
 });
 
 
 export default function VideoProvider({ children }: { children: ReactNode }) {
+    const [videoSrc, setVideoSrc] = useState<string | null>(null);
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const { mainTrack } = useContext(TracksContext);
 
@@ -40,7 +45,9 @@ export default function VideoProvider({ children }: { children: ReactNode }) {
         <VideoContext.Provider value={{
             videoRef,
             rewindToStart,
-            rewindToEnd
+            rewindToEnd,
+            setVideoSrc,
+            videoSrc
         }}>
             {children}
         </VideoContext.Provider>

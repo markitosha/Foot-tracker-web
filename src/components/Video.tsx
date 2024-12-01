@@ -31,6 +31,13 @@ export const VideoJS = ({ options, canvasRef, updateCanvas }: {
             });
         } else {
             playerRef.current.width(window.innerWidth / 2);
+
+            // set video directly to video component, because video.js throws error
+            // also HACK
+            if (options.sources && options.sources !== videoRef.current?.src) {
+                videoRef.current!.src = options.sources;
+                videoRef.current!.load();
+            }
         }
     }, [options, containerRef]);
 

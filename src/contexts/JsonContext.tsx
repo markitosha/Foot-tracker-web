@@ -1,5 +1,4 @@
 import { createContext, Dispatch, ReactNode, useReducer } from 'react';
-import jsonData from '../assets/tracks_and_candidates_v4.json';
 
 export const JsonContext = createContext<{
     allTracks: FileData;
@@ -24,7 +23,6 @@ export type JsonData = {
 
 type FileData = Record<number, JsonData>;
 
-
 type Action = {
     type: 'removeCandidate' | 'joinTracks',
     mainId: number,
@@ -32,10 +30,16 @@ type Action = {
 } | {
     type: 'removeId',
     id: number,
+} | {
+    type: 'uploadJson',
+    data: FileData,
 };
 
 const reducer = (prevState: FileData, action: Action) => {
     switch (action.type) {
+        case 'uploadJson': {
+            return action.data;
+        }
         case 'removeId': {
             const newState = structuredClone(prevState);
             delete newState[action.id];
@@ -86,7 +90,7 @@ const reducer = (prevState: FileData, action: Action) => {
 
 export default function JsonProvider({ children }: { children: ReactNode }) {
     // data from the uploaded json
-    const [allTracks, dispatch] = useReducer(reducer, jsonData as FileData)
+    const [allTracks, dispatch] = useReducer(reducer, {})
 
     return (
         <JsonContext.Provider value={{

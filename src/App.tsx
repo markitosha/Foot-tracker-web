@@ -1,6 +1,6 @@
 import CandidateTrack from './components/CandidateTrack.tsx';
 import ChoiceButtons from './components/ChoiceButtons.tsx';
-import DownloadJson from './components/DownloadJsonButton.tsx';
+import DownloadJson from './components/DataButtons.tsx';
 import MainTrack from './components/MainTrack.tsx';
 import Player from './components/Player.tsx';
 import ReferenceButtons from './components/ReferenceButtons.tsx';
@@ -13,9 +13,9 @@ function App() {
         <JsonProvider>
             <TracksProvider>
                 <VideoProvider>
-                    <div className={'flex gap-2'}>
+                    <div className={'flex gap-2 justify-center items-center'}>
                         <Player/>
-                        <div className={'flex flex-col gap-2 w-full'}>
+                        <div className={'flex flex-col gap-2 w-full justify-center items-center'}>
                             <MainTrack/>
                             <CandidateTrack/>
                             <ReferenceButtons/>

@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+import { VideoContext } from '../contexts/VideoContext.tsx';
 import useCanvasSizes from './hooks/useCanvasSizes.ts';
 import useDrawBbox from './hooks/useDrawBbox.ts';
 
@@ -5,6 +7,7 @@ import 'video.js/dist/video-js.css';
 import Video from './Video.tsx';
 
 export default function Player() {
+    const { videoSrc } = useContext(VideoContext);
     const { sizes, updateCanvas } = useCanvasSizes();
     const { canvasRef } = useDrawBbox();
 
@@ -12,7 +15,7 @@ export default function Player() {
         <div className={'relative'}>
             <Video
                 options={{
-                    sources: 'https://firebasestorage.googleapis.com/v0/b/pleaz-player-staging.appspot.com/o/282406_half_2_10min.mp4?alt=media&token=a47d6f04-cbaf-4521-a623-9724f5f45738',
+                    sources: videoSrc,
                     controls: true,
                     width: window.innerWidth / 2,
                     playbackRates: [0.5, 1, 1.5, 2, 2.5, 3, 10]
