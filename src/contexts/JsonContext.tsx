@@ -1,11 +1,15 @@
-import { createContext, Dispatch, ReactNode, useReducer } from 'react';
+import { createContext, Dispatch, ReactNode, useCallback, useReducer, useState } from 'react';
 
 export const JsonContext = createContext<{
     allTracks: FileData;
     dispatch: Dispatch<Action>;
+    history: Action[];
+    restoreTheHistory: (index: number) => void;
 }>({
     allTracks: {},
     dispatch: () => null,
+    history: [],
+    restoreTheHistory: () => null,
 });
 
 type BBox = {
@@ -23,7 +27,7 @@ export type JsonData = {
 
 type FileData = Record<number, JsonData>;
 
-type Action = {
+export type Action = {
     type: 'removeCandidate' | 'joinTracks',
     mainId: number,
     candidateId: number,
@@ -91,11 +95,29 @@ const reducer = (prevState: FileData, action: Action) => {
 export default function JsonProvider({ children }: { children: ReactNode }) {
     // data from the uploaded json
     const [allTracks, dispatch] = useReducer(reducer, {})
+    const [history, setHistory] = useState<Action[]>([]);
+
+    const dispatchWithHistory = useCallback((action: Action) => {
+        setHistory(history => [...history, action]);
+        dispatch(action);
+    }, [dispatch, setHistory]);
+
+    const restoreTheHistory = useCallback((index: number) => {
+        const newHistory = history.slice(0, index + 1);
+
+        for (let i = 0; i < newHistory.length; i++) {
+            dispatch(newHistory[i]);
+        }
+
+        setHistory(newHistory);
+    }, [history, setHistory, dispatch]);
 
     return (
         <JsonContext.Provider value={{
             allTracks,
-            dispatch
+            dispatch: dispatchWithHistory,
+            history,
+            restoreTheHistory
         }}>
             {children}
         </JsonContext.Provider>
