@@ -12,7 +12,7 @@ export default function TrackStatus({ trackStatus }: Props) {
             {
                 'bg-green-700 border-green-700 text-green-700': trackStatus === 'Трек активен',
                 'bg-blue-700 border-blue-700 text-blue-700': trackStatus === 'Пауза внутри трека',
-                'bg-gray-700 border-gray-700 text-gray-700': trackStatus !== 'Трек активен',
+                'bg-gray-700 border-gray-700 text-gray-700': trackStatus !== 'Трек активен' && trackStatus !== 'Пауза внутри трека',
             })
         }>
             ◉ {trackStatus}
