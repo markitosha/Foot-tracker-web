@@ -35,6 +35,8 @@ export const TracksContext = createContext<{
     mainTrackStatus: TrackStatusType;
     candidateTrackStatus: TrackStatusType;
     removeTrackById: (id: number) => void;
+    trackTimeShift: number;
+    setTrackTimeShift: (n: number) => void;
 }>({
     mainTrack: [],
     mainTrackId: 0,
@@ -51,11 +53,14 @@ export const TracksContext = createContext<{
     setMainTrackStatus: () => {},
     mainTrackStatus: '',
     candidateTrackStatus: '',
-    removeTrackById: () => {}
+    removeTrackById: () => {},
+    setTrackTimeShift: () => {},
+    trackTimeShift: 0
 });
 
 export default function TracksProvider({ children }: { children: ReactNode }) {
     const { allTracks, dispatch } = useContext(JsonContext);
+    const [trackTimeShift, setTrackTimeShift] = useState(0);
     // all track ids
     const trackList = useMemo(() => Object.keys(allTracks).map(value => +value), [allTracks]);
 
@@ -111,6 +116,13 @@ export default function TracksProvider({ children }: { children: ReactNode }) {
         }
     }, [trackList, mainTrackId]);
 
+    useEffect(() => {
+        const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1
+            && navigator.userAgent.toLowerCase().indexOf('seamonkey') === -1;
+
+        setTrackTimeShift(isFirefox ? 0 : 1);
+    }, []);
+
     /**
      * Actions for JSON Context
      */
@@ -145,7 +157,9 @@ export default function TracksProvider({ children }: { children: ReactNode }) {
         setCandidateTrackStatus,
         mainTrackStatus,
         candidateTrackStatus,
-        removeTrackById
+        removeTrackById,
+        trackTimeShift,
+        setTrackTimeShift
     }}>
         {children}
     </TracksContext.Provider>

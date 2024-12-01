@@ -2,8 +2,6 @@ import { MutableRefObject, useContext, useEffect, useRef } from 'react';
 import { Track, TracksContext, TrackStatusType } from '../../contexts/TracksContext.tsx';
 import { VideoContext } from '../../contexts/VideoContext.tsx';
 
-const TIME_SHIFT = 1000;
-
 export default function useDrawBbox() {
     const { videoRef } = useContext(VideoContext);
 
@@ -15,7 +13,13 @@ export default function useDrawBbox() {
     const frameCandidate = useRef(0);
     const lastCurrentTime = useRef(0);
 
-    const { mainTrack, candidateTrack, setCandidateTrackStatus, setMainTrackStatus } = useContext(TracksContext);
+    const {
+        mainTrack,
+        candidateTrack,
+        setCandidateTrackStatus,
+        setMainTrackStatus,
+        trackTimeShift
+    } = useContext(TracksContext);
 
     useEffect(() => {
         ctx.current = canvasRef.current?.getContext('2d');
@@ -43,7 +47,7 @@ export default function useDrawBbox() {
             videoRef.current?.removeEventListener('play', start);
             videoRef.current?.removeEventListener('timeupdate', timeUpdate);
         }
-    }, [mainTrack, candidateTrack, videoRef.current]);
+    }, [mainTrack, candidateTrack, trackTimeShift, videoRef.current]);
 
     const drawBbox = (
         track: Track[],
@@ -56,7 +60,7 @@ export default function useDrawBbox() {
         }
 
         // In this track for some reason time difference is a second (explanation for "- 1000")
-        const timeDiff = (videoRef.current?.currentTime || 0) * 1000 - TIME_SHIFT;
+        const timeDiff = (videoRef.current?.currentTime || 0) * 1000 - trackTimeShift * 1000;
         let nextRect = track[frame.current];
 
         if (!nextRect) {
